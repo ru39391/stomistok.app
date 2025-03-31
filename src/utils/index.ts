@@ -25,6 +25,21 @@ const sortArrValues = (arr: TCustomValues[], key: string): TCustomValues[] => {
   });
 };
 
+const handleResValue = async (value: string) => {
+  let response: { isSucceed: boolean, data: string | null } = { isSucceed: false, data: null };
+
+  try {
+    await navigator.clipboard.writeText(value);
+
+    response = { isSucceed: true, data: value };
+  } catch (error) {
+    console.error(error);
+  }
+
+  return response;
+};
+
 export {
-  sortArrValues
+  sortArrValues,
+  handleResValue
 }

@@ -2,7 +2,7 @@
   <div class="bg-white shadow-lg rounded-lg p-4">
     <h2 class="text-xl font-semibold mb-4">{{ index }}) {{ pagetitle }}, ID={{ id }}, parent={{ parent }}</h2>
     <button
-      class="bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 active:bg-blue-800 text-white cursor-pointer rounded py-1 px-4 mb-3"
+      class="text-white bg-blue-500 hover:bg-blue-700 active:bg-blue-800 cursor-pointer rounded py-1 px-4 mb-3"
       type="button"
       @click="fetchResources"
     >
@@ -22,6 +22,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { handleResValue } from '../utils';
 import type { TItemData } from '../utils/types';
 
 export default defineComponent({
@@ -63,9 +64,17 @@ export default defineComponent({
   },
 
   setup(props) {
-    const fetchResources = () => console.log(
-      JSON.stringify([...props.children].map((item: TItemData) => ({ ...item })))
-    );
+    const fetchResources = async () => {
+      const value = JSON.stringify([...props.children].map((item: TItemData) => ({ ...item })));
+
+      try {
+        const { data } = await handleResValue(value);
+
+        console.log({ data });
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     return {
       fetchResources

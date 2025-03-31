@@ -27,6 +27,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useResourcesStore } from '../store/modules/resources';
+import { handleResValue } from '../utils';
 import type { TItemData } from '../utils/types';
 import Card from '../components/Card.vue'
 
@@ -42,9 +43,17 @@ export default defineComponent({
     const parentsList = computed(() => resourcesStore.parentsList);
     const templatesList = computed(() => resourcesStore.templatesList);
 
-    const fetchTemplates = () => console.log(
-      JSON.stringify([...templatesList.value].map((item: TItemData) => ({ ...item })))
-    );
+    const fetchTemplates = async () => {
+      const value = JSON.stringify([...templatesList.value].map((item: TItemData) => ({ ...item })));
+
+      try {
+        const { data } = await handleResValue(value);
+
+        console.log({ data });
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     return {
       parentsList,
