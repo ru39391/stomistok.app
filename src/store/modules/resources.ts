@@ -4,10 +4,13 @@ import { ref } from 'vue';
 import {
   ID_KEY,
   PARENT_KEY,
+  PAGETITLE_KEY,
   API_URL,
   DATA_IS_LOADING_MESS,
   POSTS_ERROR_MESS
 } from '../../utils/constants';
+
+import { sortArrValues } from '../../utils';
 
 import type { TItemData, TParentData } from '../../utils/types';
 
@@ -36,15 +39,25 @@ const useResourcesStore = defineStore('resources', () => {
       parentsList.value = [];
     }
 
+    const parentsExtList = sortArrValues(
+      Object.values(parents).map(item => ({ [ID_KEY]: item })),
+      ID_KEY
+    ).reduce((acc, item) => ({ ...acc, [item[ID_KEY]]: item[ID_KEY] }), {});
+    const resExtList = [
+      ...resources,
+      { [ID_KEY]: 0, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Website' },
+      { [ID_KEY]: 8, [PARENT_KEY]: 2, [PAGETITLE_KEY]: 'ДЕТСКОЕ ОТДЕЛЕНИЕ' },
+      { [ID_KEY]: 168, [PARENT_KEY]: 18, [PAGETITLE_KEY]: 'Рефлексотерапия' },
+      { [ID_KEY]: 230, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Хайлайты' },
+      { [ID_KEY]: 240, [PARENT_KEY]: 243, [PAGETITLE_KEY]: 'Тестирование и разработка' },
+    ];
+
     resList.value = [...resources];
 
-    for (const key in parents) {
-      const data = resources.find(res => res[ID_KEY] === parents[key]);
-      const children = resources.filter(res => res[PARENT_KEY] === parents[key]);
+    for (const key in parentsExtList) {
+      const data = resExtList.find(res => res[ID_KEY] === parentsExtList[key]);
+      const children = resources.filter(res => res[PARENT_KEY] === parentsExtList[key]);
 
-      // TODO: добавить столбец с ресурсов с parent= 0
-      // TODO: настроить обработку неопубликованных категорий
-      // TODO: настроить сортировку категорий по id
       parentsList.value = data ? [...parentsList.value, { ...data, children }] : parentsList.value;
     };
   };
