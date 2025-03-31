@@ -19,10 +19,12 @@ const useResourcesStore = defineStore('resources', () => {
   const alertMessage = ref<string>(DATA_IS_LOADING_MESS);
   const resList = ref<TItemData[]>([]);
   const parentsList = ref<TParentData[]>([]);
+  const templatesList = ref<TItemData[]>([]);
 
   const resetData = () => {
     setLoading(true);
     setItemsList({});
+    setTemplatesList();
   };
 
   const setLoading = (value: boolean) => {
@@ -31,6 +33,12 @@ const useResourcesStore = defineStore('resources', () => {
 
   const setAlertMessage = (value: string) => {
     alertMessage.value = value;
+  };
+
+  const setTemplatesList = (templates: TItemData[] = []) => {
+    templatesList.value = [...templates].map(
+      item => ({ ...item, content: `{include 'file:templates/${item.content.toString().split(' ')[1]}}` })
+    );
   };
 
   const setItemsList = (parents: Record<string, number>, resources: TItemData[] = []) => {
@@ -80,9 +88,10 @@ const useResourcesStore = defineStore('resources', () => {
         return;
       }
 
-      const { parents, resources } = data;
+      const { parents, resources, templates } = data;
 
       console.log(data);
+      setTemplatesList(templates);
       setItemsList(parents, resources);
     } catch (error) {
       setAlertMessage(POSTS_ERROR_MESS);
@@ -97,6 +106,7 @@ const useResourcesStore = defineStore('resources', () => {
     alertMessage,
     resList,
     parentsList,
+    templatesList,
     setLoading,
     fetchData,
   };

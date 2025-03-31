@@ -1,5 +1,14 @@
 <template>
-  <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+  <div class="gap-4 p-4 pb-0 mb-3">
+    <button
+      class="border border-blue-500 text-blue-600/100 dark:text-blue-600/100 cursor-pointer rounded py-1 px-4"
+      type="button"
+      @click="fetchTemplates"
+    >
+      Получить данные шаблонов
+    </button>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 pt-0">
     <Card
       v-for="(item, index) in parentsList"
       :index="index + 1"
@@ -18,6 +27,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useResourcesStore } from '../store/modules/resources';
+import type { TItemData } from '../utils/types';
 import Card from '../components/Card.vue'
 
 export default defineComponent({
@@ -30,9 +40,15 @@ export default defineComponent({
   setup() {
     const resourcesStore = useResourcesStore();
     const parentsList = computed(() => resourcesStore.parentsList);
+    const templatesList = computed(() => resourcesStore.templatesList);
+
+    const fetchTemplates = () => console.log(
+      JSON.stringify([...templatesList.value].map((item: TItemData) => ({ ...item })))
+    );
 
     return {
-      parentsList
+      parentsList,
+      fetchTemplates
     }
   }
 });
