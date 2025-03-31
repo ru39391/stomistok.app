@@ -11,6 +11,7 @@
         :disabled="isBtnDisabled"
         class="border border-blue-500 text-blue-600/100 disabled:text-gray-300 disabled:border-gray-300 disabled:cursor-default cursor-pointer rounded py-1 px-4"
         type="button"
+        @click="createTemplates"
       >
         Создать шаблоны
       </button>
@@ -18,6 +19,7 @@
         :disabled="isBtnDisabled"
         class="text-white bg-blue-500 hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-300 disabled:cursor-default cursor-pointer rounded py-1 px-4"
         type="button"
+        @click="createResources"
       >
         Сохранить ресурсы
       </button>
@@ -34,11 +36,13 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
+import { useResourcesStore } from '../store/modules/resources';
 
 export default defineComponent({
   name: 'Form',
 
   setup() {
+    const resourcesStore = useResourcesStore();
     const data = ref('');
     const isBtnDisabled = computed(() => !data.value);
 
@@ -46,10 +50,16 @@ export default defineComponent({
       data.value = '';
     };
 
+    const createResources = () => resourcesStore.createData(data.value);
+
+    const createTemplates = () => resourcesStore.createData(data.value, false);
+
     return {
       data,
       isBtnDisabled,
-      resetForm
+      resetForm,
+      createResources,
+      createTemplates
     }
   },
 });

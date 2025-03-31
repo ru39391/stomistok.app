@@ -101,6 +101,10 @@ const useResourcesStore = defineStore('resources', () => {
     }
   };
 
+  const createData = async (value: string, isResource: boolean = true) => {
+    console.log(JSON.parse(value));
+  };
+
   return {
     isLoading,
     alertMessage,
@@ -109,6 +113,7 @@ const useResourcesStore = defineStore('resources', () => {
     templatesList,
     setLoading,
     fetchData,
+    createData
   };
 });
 
