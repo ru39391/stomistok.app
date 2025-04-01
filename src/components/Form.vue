@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useResourcesStore } from '../store/modules/resources';
 
 export default defineComponent({
@@ -45,6 +45,7 @@ export default defineComponent({
     const resourcesStore = useResourcesStore();
     const data = ref('');
     const isBtnDisabled = computed(() => !data.value);
+    const isLoading = computed(() => resourcesStore.isLoading);
 
     const resetForm = () => {
       data.value = '';
@@ -53,6 +54,16 @@ export default defineComponent({
     const createResources = () => resourcesStore.createData(data.value);
 
     const createTemplates = () => resourcesStore.createData(data.value, false);
+
+    watch(
+      () => isLoading.value,
+      (value) => {
+        if(!value) {
+          resetForm();
+        }
+      },
+      { deep: false }
+    );
 
     return {
       data,

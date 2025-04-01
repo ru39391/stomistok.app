@@ -101,8 +101,34 @@ const useResourcesStore = defineStore('resources', () => {
     }
   };
 
-  const createData = async (value: string, isResource: boolean = true) => {
-    console.log(JSON.parse(value));
+  const createData = async (body: string, isResource: boolean = true) => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `${API_URL}resource${isResource ? '' : `/1`}`,
+        { method: 'POST', body }
+      );
+
+      if(!response.ok) {
+        setAlertMessage(POSTS_ERROR_MESS);
+        return;
+      }
+
+      const { success, data } = await response.json();
+
+      if(!success) {
+        setAlertMessage(POSTS_ERROR_MESS);
+        return;
+      }
+
+      console.log(data);
+    } catch (error) {
+      setAlertMessage(POSTS_ERROR_MESS);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
