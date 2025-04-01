@@ -12,14 +12,12 @@
     <Card
       v-for="(item, index) in parentsList"
       :index="index + 1"
-      :key="item.id"
+      :key="item.id.toString()"
       :id="item.id.toString()"
-      :pagetitle="item.pagetitle"
-      :uri="item.uri"
-      :published="item.published"
+      :pagetitle="item.pagetitle.toString()"
       :parent="item.parent.toString()"
-      :isfolder="item.isfolder"
-      :children="item.children"
+      :isfolder="Boolean(item.isfolder)"
+      :children="Array.isArray(item.children) ? item.children : []"
     />
   </div>
 </template>

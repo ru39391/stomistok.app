@@ -66,7 +66,7 @@ const useResourcesStore = defineStore('resources', () => {
       const data = resExtList.find(res => res[ID_KEY] === parentsExtList[key]);
       const children = resources.filter(res => res[PARENT_KEY] === parentsExtList[key]);
 
-      parentsList.value = data ? [...parentsList.value, { ...data, children }] : parentsList.value;
+      parentsList.value = data ? [...parentsList.value, { ...data, children } as TParentData] : parentsList.value;
     };
   };
 

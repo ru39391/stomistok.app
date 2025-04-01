@@ -10,8 +10,8 @@
     </button>
     <ol class="list-decimal list-inside space-y-2 pl-5 mb-3">
       <li
-        v-for="item in children"
-        :key="item.id"
+        v-for="item in resources"
+        :key="item.id.toString()"
         :class="item.isfolder ?  'text-blue-600/100 dark:text-blue-600/100' : 'text-gray-400/100 dark:text-gray-400/100'"
       >
         {{ item.pagetitle }}, id={{ item.id.toString() }}
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { handleResValue } from '../utils';
 import type { TItemData } from '../utils/types';
 
@@ -51,21 +51,23 @@ export default defineComponent({
     },
     parent: {
       type: String,
-      required: false,
+      required: true,
     },
     isfolder: {
       type: Boolean,
-      required: false,
+      required: true,
     },
     children: {
       type: Array,
-      required: false,
+      required: true,
     },
   },
 
   setup(props) {
+    const resources = computed(() => props.children ? [...props.children] as TItemData[] : [] as TItemData[]);
+
     const fetchResources = async () => {
-      const value = JSON.stringify([...props.children].map((item: TItemData) => ({ ...item })));
+      const value = JSON.stringify(props.children ? [...props.children as TItemData[]].map(item => ({ ...item })) : []);
 
       try {
         const { data } = await handleResValue(value);
@@ -77,6 +79,7 @@ export default defineComponent({
     };
 
     return {
+      resources,
       fetchResources
     }
   },
