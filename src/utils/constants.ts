@@ -1,6 +1,7 @@
 const ID_KEY = 'id';
 const PARENT_KEY = 'parent';
 const PAGETITLE_KEY = 'pagetitle';
+const PUBLISHED_KEY = 'published';
 
 const DATA_IS_LOADING_MESS = 'Данные загружаются';
 const POSTS_ERROR_MESS = 'При загрузке списка статей произошла ошибка, повторите попытку позже';
@@ -12,6 +13,7 @@ export {
   ID_KEY,
   PARENT_KEY,
   PAGETITLE_KEY,
+  PUBLISHED_KEY,
   API_URL,
   SITE_URL,
   DATA_IS_LOADING_MESS,

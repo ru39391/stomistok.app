@@ -5,6 +5,7 @@ import {
   ID_KEY,
   PARENT_KEY,
   PAGETITLE_KEY,
+  PUBLISHED_KEY,
   API_URL,
   DATA_IS_LOADING_MESS,
   POSTS_ERROR_MESS
@@ -12,7 +13,7 @@ import {
 
 import { sortArrValues } from '../../utils';
 
-import type { TItemData, TParentData } from '../../utils/types';
+import type { TCustomValues, TItemData, TParentData } from '../../utils/types';
 
 const useResourcesStore = defineStore('resources', () => {
   const isLoading = ref<boolean>(true);
@@ -54,13 +55,18 @@ const useResourcesStore = defineStore('resources', () => {
     const resExtList = [
       ...resources,
       { [ID_KEY]: 0, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Website' },
-      { [ID_KEY]: 8, [PARENT_KEY]: 2, [PAGETITLE_KEY]: 'ДЕТСКОЕ ОТДЕЛЕНИЕ' },
-      { [ID_KEY]: 168, [PARENT_KEY]: 18, [PAGETITLE_KEY]: 'Рефлексотерапия' },
-      { [ID_KEY]: 230, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Хайлайты' },
-      { [ID_KEY]: 240, [PARENT_KEY]: 243, [PAGETITLE_KEY]: 'Тестирование и разработка' },
+      { [ID_KEY]: 8, [PARENT_KEY]: 2, [PAGETITLE_KEY]: 'ДЕТСКОЕ ОТДЕЛЕНИЕ', [PUBLISHED_KEY]: false },
+      { [ID_KEY]: 168, [PARENT_KEY]: 18, [PAGETITLE_KEY]: 'Рефлексотерапия', [PUBLISHED_KEY]: false },
+      { [ID_KEY]: 230, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Хайлайты', [PUBLISHED_KEY]: false },
+      { [ID_KEY]: 240, [PARENT_KEY]: 243, [PAGETITLE_KEY]: 'Тестирование и разработка', [PUBLISHED_KEY]: false },
     ];
 
-    resList.value = [...resources];
+    resList.value = sortArrValues(
+      [...resources as TCustomValues[]].filter(item => ![40,230,240,243,356].includes(item[PARENT_KEY] as number)),
+      PARENT_KEY
+    ) as TItemData[];
+    // 1092
+    // 770
 
     for (const key in parentsExtList) {
       const data = resExtList.find(res => res[ID_KEY] === parentsExtList[key]);
