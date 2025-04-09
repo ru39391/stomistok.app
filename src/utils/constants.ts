@@ -2,6 +2,7 @@ const ID_KEY = 'id';
 const PARENT_KEY = 'parent';
 const PAGETITLE_KEY = 'pagetitle';
 const PUBLISHED_KEY = 'published';
+const CLASS_KEY = 'class_key';
 
 const DATA_IS_LOADING_MESS = 'Данные загружаются';
 const POSTS_ERROR_MESS = 'При загрузке списка статей произошла ошибка, повторите попытку позже';
@@ -11,6 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export {
   ID_KEY,
+  CLASS_KEY,
   PARENT_KEY,
   PAGETITLE_KEY,
   PUBLISHED_KEY,

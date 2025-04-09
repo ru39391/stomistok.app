@@ -23,14 +23,15 @@
           <th class="px-4 py-2 text-left">#</th>
           <th class="px-4 py-2 text-left">ID</th>
           <th class="px-4 py-2 text-left">Заголовок</th>
+          <th class="px-4 py-2 text-left">ID категории, новый</th>
           <th class="px-4 py-2 text-left">ID категории</th>
           <th class="px-4 py-2 text-left">Категория</th>
         </tr>
       </thead>
       <tbody>
         <Row
-          v-for="(item, index) in resList"
-          :index="index + 1"
+          v-for="item in resList"
+          :index="item.idx"
           :key="item.id.toString()"
           :id="item.id.toString()"
           :item="item"
@@ -46,6 +47,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
+import { ID_KEY, PARENT_KEY } from '../utils/constants';
 import { useResourcesStore } from '../store/modules/resources';
 import { handleResValue } from '../utils';
 import type { TItemData } from '../utils/types';
@@ -68,21 +70,26 @@ export default defineComponent({
       const value = JSON.stringify([...templatesList.value].map((item: TItemData) => ({ ...item })));
 
       try {
-        const { data } = await handleResValue(value);
+        await handleResValue(value);
 
-        console.log({ data });
+        console.log('tpl data is copied!');
       } catch (error) {
         console.error(error);
       }
     };
 
     const fetchResources = async () => {
-      const value = JSON.stringify([...resList.value].map((item: TItemData) => ({ ...item })));
+      const arr = [...resList.value].map((item: TItemData, _, arr) => {
+        const parentData = arr.find(data => data[ID_KEY] === item[PARENT_KEY]);
+
+        return { ...item, [ID_KEY]: item.idx, ...(parentData && { [PARENT_KEY]: parentData.idx })};
+      });
 
       try {
-        const { data } = await handleResValue(value);
+        await handleResValue(JSON.stringify(arr));
 
-        console.log({ data });
+        console.log('res data is copied!');
+        console.log(arr);
       } catch (error) {
         console.error(error);
       }
