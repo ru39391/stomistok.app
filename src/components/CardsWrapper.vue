@@ -16,7 +16,6 @@
     </button>
   </div>
   <div class="p-4">
-    <!-- // TODO: настроить переключатель для таблицы -->
     <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
       <thead class="bg-gray-500 text-white">
         <tr>
@@ -30,11 +29,11 @@
       </thead>
       <tbody>
         <Row
-          v-for="item in resList"
-          :index="item.idx"
+          v-for="item in resourcesList"
+          :item="item"
+          :index="item.idx.toString()"
           :key="item.id.toString()"
           :id="item.id.toString()"
-          :item="item"
           :pagetitle="item.pagetitle.toString()"
           :parent="item.parent.toString()"
           :isfolder="Boolean(item.isfolder)"
@@ -49,6 +48,7 @@
 import { computed, defineComponent } from 'vue';
 import { useResourcesStore } from '../store/modules/resources';
 import { handleResValue } from '../utils';
+import { ID_KEY, PARENT_KEY } from '../utils/constants';
 import type { TItemData } from '../utils/types';
 import Row from '../components/Row.vue'
 
@@ -63,13 +63,14 @@ export default defineComponent({
     resList: {
       type: Array,
       required: true,
-    },
+    }
   },
 
   setup(props) {
     const resourcesStore = useResourcesStore();
     const parentsList = computed(() => resourcesStore.parentsList);
     const templatesList = computed(() => resourcesStore.templatesList);
+    const resourcesList = computed(() => [...props.resList] as TItemData[]);
 
     const fetchTemplates = async () => {
       const value = JSON.stringify([...templatesList.value].map((item: TItemData) => ({ ...item })));
@@ -84,7 +85,11 @@ export default defineComponent({
     };
 
     const fetchResources = async () => {
-      const arr = [];
+      const arr = [...props.resList as TItemData[]].map((item: TItemData) => {
+        const parentData = parentsList.value.find(data => data[ID_KEY] === item[PARENT_KEY]);
+
+        return { ...item, [ID_KEY]: item.idx, [PARENT_KEY]: parentData ? parentData.idx : 0 };
+      });
 
       try {
         await handleResValue(JSON.stringify(arr));
@@ -98,6 +103,7 @@ export default defineComponent({
 
     return {
       parentsList,
+      resourcesList,
       fetchTemplates,
       fetchResources
     }

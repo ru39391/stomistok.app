@@ -5,8 +5,6 @@ import {
   ID_KEY,
   CLASS_KEY,
   PARENT_KEY,
-  PAGETITLE_KEY,
-  PUBLISHED_KEY,
   API_URL,
   DATA_IS_LOADING_MESS,
   POSTS_ERROR_MESS
@@ -14,7 +12,7 @@ import {
 
 import { sortArrValues } from '../../utils';
 
-import type { TCustomValues, TItemData, TParentData } from '../../utils/types';
+import type { TCustomValues, TItemData } from '../../utils/types';
 
 const useResourcesStore = defineStore('resources', () => {
   const isLoading = ref<boolean>(true);
@@ -26,7 +24,7 @@ const useResourcesStore = defineStore('resources', () => {
 
   const resetData = () => {
     setLoading(true);
-    setItemsList({});
+    setItemsList([]);
     setTemplatesList();
   };
 
@@ -52,18 +50,25 @@ const useResourcesStore = defineStore('resources', () => {
     }
 
     const sortResArr = (arr: TItemData[]): TItemData[] => sortArrValues(
-      [...arr] as TCustomValues[],
+      [...arr].filter(item => ![40,230,243,356].includes(item[ID_KEY] as number)) as TCustomValues[],
       PARENT_KEY
-    ).map((item, index) => ({ ...item, idx: index + 1 })) as TItemData[];
+    ).map(
+      (item, index) => ({ ...item, idx: index + 1, [CLASS_KEY]: 'MODX\\Revolution\\modDocument' })
+    ) as TItemData[];
 
     const [pages, features] = data ? Object.values(data) as TItemData[][] : [[], []] as TItemData[][];
+    const [pagesSorted, featuresSorted] = [sortResArr(pages), sortResArr(features)];
 
-    pagesList.value = sortResArr(pages);
-    featuresList.value = sortResArr(features);
+    pagesList.value = pagesSorted;
+    featuresList.value = featuresSorted;
     parentsList.value = [...pages, ...features].reduce(
       (acc, item) => parents.includes(item[ID_KEY] as number) ? [...acc, item] : acc,
       [] as TItemData[]
-    );
+    ).map(item => {
+      const data = [...pagesSorted, ...featuresSorted].find(res => res[ID_KEY] === item[ID_KEY]);
+
+      return data ? {...item, ...data} : item;
+    });
   };
 
   const fetchData = async () => {

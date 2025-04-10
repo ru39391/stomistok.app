@@ -6,9 +6,17 @@
         active-class="text-blue-400/100"
         to="/"
       >
-        Ресурсы
+        Веб-страницы
       </router-link>
       <router-link
+        class="hover:text-blue-400"
+        active-class="text-blue-400/100"
+        to="/features"
+      >
+        Прочее содержимое
+      </router-link>
+      <router-link
+        v-if="false"
         class="hover:text-blue-400"
         active-class="text-blue-400/100"
         to="/form"

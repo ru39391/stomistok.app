@@ -1,4 +1,4 @@
-import type { TCustomData, TCustomValues } from './types';
+import type { TCustomValues } from './types';
 
 const sortArrValues = (arr: TCustomValues[], key: string): TCustomValues[] => {
   const handleStrValue = (value: string): string => value !== null ? value.toString().toLowerCase() : '';
