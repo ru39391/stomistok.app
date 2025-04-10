@@ -3,22 +3,24 @@
     :class="[
       'border-t border-gray-300',
       { 'bg-gray-100': isfolder },
-      { 'bg-slate-300 text-stone-700 border-zinc-400': isPageFeature },
-      { 'bg-red-400 text-white border-zinc-400': category.title !== category.subtitle }
     ]"
     @click="getItemData()"
   >
     <td class="px-4 py-2">{{ index }}</td>
     <td class="px-4 py-2">{{ id }}</td>
     <td class="px-4 py-2">{{ pagetitle }}</td>
-    <td class="px-4 py-2">{{ category.id }}</td>
     <td class="px-4 py-2">{{ parent }}</td>
+    <!--
+      { 'bg-slate-300 text-stone-700 border-zinc-400': isPageFeature },
+      { 'bg-red-400 text-white border-zinc-400': category.title !== category.subtitle }
+    <td class="px-4 py-2">{{ category.id }}</td>
     <td
       :class="[
         'px-4 py-2',
         { 'line-through': category.isUnpublished }
       ]"
     >{{ category.title }}<template v-if="category.title !== category.subtitle"> - {{ category.subtitle }}</template></td>
+    -->
   </tr>
 </template>
 
@@ -70,6 +72,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    /*
     const category = computed(() => {
       const data = [...props.parentsList as TItemData[]].find(item => item[ID_KEY] === Number(props.parent));
       const index = data.idx as number || data[ID_KEY] as number;
@@ -94,6 +97,7 @@ export default defineComponent({
       isPageFeature,
       getItemData
     }
+    */
   },
 });
 </script>

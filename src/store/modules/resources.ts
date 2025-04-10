@@ -19,8 +19,9 @@ import type { TCustomValues, TItemData, TParentData } from '../../utils/types';
 const useResourcesStore = defineStore('resources', () => {
   const isLoading = ref<boolean>(true);
   const alertMessage = ref<string>(DATA_IS_LOADING_MESS);
-  const resList = ref<TItemData[]>([]);
-  const parentsList = ref<TParentData[]>([]);
+  const pagesList = ref<TItemData[]>([]);
+  const featuresList = ref<TItemData[]>([]);
+  const parentsList = ref<TItemData[]>([]);
   const templatesList = ref<TItemData[]>([]);
 
   const resetData = () => {
@@ -43,53 +44,26 @@ const useResourcesStore = defineStore('resources', () => {
     );
   };
 
-  const setItemsList = (parents: Record<string, number>, resources: TItemData[] = []) => {
-    if(!resources.length) {
-      resList.value = [];
+  const setItemsList = (parents: number[], data: Record<string, TItemData[]> | null = null) => {
+    if(!data) {
+      pagesList.value = [];
+      featuresList.value = [];
       parentsList.value = [];
     }
 
-    const parentsExtList = sortArrValues(
-      Object.values(parents).map(item => ({ [ID_KEY]: item })),
-      ID_KEY
-    ).reduce((acc, item) => ({ ...acc, [item[ID_KEY]]: item[ID_KEY] }), {});
-    const resListExtended = [
-      ...resources,
-      { [ID_KEY]: 0, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Website' },
-      /**/
-      { [ID_KEY]: 8, [PARENT_KEY]: 2, [PAGETITLE_KEY]: 'ДЕТСКОЕ ОТДЕЛЕНИЕ', [PUBLISHED_KEY]: false },
-      { [ID_KEY]: 168, [PARENT_KEY]: 18, [PAGETITLE_KEY]: 'Рефлексотерапия', [PUBLISHED_KEY]: false },
-      { [ID_KEY]: 230, [PARENT_KEY]: 0, [PAGETITLE_KEY]: 'Хайлайты', [PUBLISHED_KEY]: false },
-      { [ID_KEY]: 240, [PARENT_KEY]: 243, [PAGETITLE_KEY]: 'Тестирование и разработка', [PUBLISHED_KEY]: false },
-    ];
-    // 40 Отзывы
-    // 230 Хайлайты
-    // 240 Тестирование и разработка
-    // 243 Технические страницы
-    // 356 Примеры работ
-    const resListSorted = sortArrValues(
-      [...resources as TCustomValues[]].filter(
-        item => ![40,230,240,243,356].includes(item[PARENT_KEY] as number)
-      ),
+    const sortResArr = (arr: TItemData[]): TItemData[] => sortArrValues(
+      [...arr] as TCustomValues[],
       PARENT_KEY
-    ).map(
-      (item, index) => ({...item, [CLASS_KEY]: 'MODX\\Revolution\\modDocument', idx: index + 1 })
-    ) as TItemData[];
+    ).map((item, index) => ({ ...item, idx: index + 1 })) as TItemData[];
 
-    resList.value = resListSorted;
+    const [pages, features] = data ? Object.values(data) as TItemData[][] : [[], []] as TItemData[][];
 
-    for (const key in parentsExtList) {
-      const data = resListExtended.reduce((acc, res) => {
-        const resData = resListSorted.find(item => res[ID_KEY] === item[ID_KEY])
-
-        return [...acc, resData ? {...res, ...resData} : res];
-      }, [] as TItemData[]).find(
-        res => res[ID_KEY] === parentsExtList[key]
-      );
-      //const children = resListSorted.filter(res => res[PARENT_KEY] === parentsExtList[key]);
-
-      parentsList.value = data ? [...parentsList.value, { ...data } as TParentData] : parentsList.value;
-    };
+    pagesList.value = sortResArr(pages);
+    featuresList.value = sortResArr(features);
+    parentsList.value = [...pages, ...features].reduce(
+      (acc, item) => parents.includes(item[ID_KEY] as number) ? [...acc, item] : acc,
+      [] as TItemData[]
+    );
   };
 
   const fetchData = async () => {
@@ -110,11 +84,11 @@ const useResourcesStore = defineStore('resources', () => {
         return;
       }
 
-      const { parents, resources, templates } = data;
+      const { parents, pages, features, templates } = data;
 
       console.log(data);
       setTemplatesList(templates);
-      setItemsList(parents, resources);
+      setItemsList(parents, { pages, features });
     } catch (error) {
       setAlertMessage(POSTS_ERROR_MESS);
       console.error(error);
@@ -156,7 +130,8 @@ const useResourcesStore = defineStore('resources', () => {
   return {
     isLoading,
     alertMessage,
-    resList,
+    pagesList,
+    featuresList,
     parentsList,
     templatesList,
     setLoading,

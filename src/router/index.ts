@@ -1,12 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Resources from '../views/Resources.vue';
+import Features from '../views/Features.vue';
+import Pages from '../views/Pages.vue';
 import ResManager from '../views/ResManager.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'Resources',
-    component: Resources
+    name: 'Pages',
+    component: Pages
+  },
+  {
+    path: '/features',
+    name: 'Features',
+    component: Features
   },
   {
     path: '/form',

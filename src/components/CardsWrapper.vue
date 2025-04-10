@@ -47,7 +47,6 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { ID_KEY, PARENT_KEY } from '../utils/constants';
 import { useResourcesStore } from '../store/modules/resources';
 import { handleResValue } from '../utils';
 import type { TItemData } from '../utils/types';
@@ -60,9 +59,15 @@ export default defineComponent({
     Row
   },
 
-  setup() {
+  props: {
+    resList: {
+      type: Array,
+      required: true,
+    },
+  },
+
+  setup(props) {
     const resourcesStore = useResourcesStore();
-    const resList = computed(() => resourcesStore.resList);
     const parentsList = computed(() => resourcesStore.parentsList);
     const templatesList = computed(() => resourcesStore.templatesList);
 
@@ -79,11 +84,7 @@ export default defineComponent({
     };
 
     const fetchResources = async () => {
-      const arr = [...resList.value].map((item: TItemData, _, arr) => {
-        const parentData = arr.find(data => data[ID_KEY] === item[PARENT_KEY]);
-
-        return { ...item, [ID_KEY]: item.idx, ...(parentData && { [PARENT_KEY]: parentData.idx })};
-      });
+      const arr = [];
 
       try {
         await handleResValue(JSON.stringify(arr));
@@ -96,7 +97,6 @@ export default defineComponent({
     };
 
     return {
-      resList,
       parentsList,
       fetchTemplates,
       fetchResources
