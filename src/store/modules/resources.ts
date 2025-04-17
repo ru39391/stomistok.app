@@ -12,7 +12,7 @@ import {
 
 import { sortArrValues } from '../../utils';
 
-import type { TCustomValues, TItemData } from '../../utils/types';
+import type { TCustomValues, TItemData, TTemplateData } from '../../utils/types';
 
 const useResourcesStore = defineStore('resources', () => {
   const isLoading = ref<boolean>(true);
@@ -20,7 +20,7 @@ const useResourcesStore = defineStore('resources', () => {
   const pagesList = ref<TItemData[]>([]);
   const featuresList = ref<TItemData[]>([]);
   const parentsList = ref<TItemData[]>([]);
-  const templatesList = ref<TItemData[]>([]);
+  const templatesList = ref<TTemplateData[]>([]);
 
   const resetData = () => {
     setLoading(true);
@@ -36,10 +36,22 @@ const useResourcesStore = defineStore('resources', () => {
     alertMessage.value = value;
   };
 
-  const setTemplatesList = (templates: TItemData[] = []) => {
+  const setTemplatesList = (variables: TItemData[] = [], templates: (TItemData & { vars: number[] })[] = []) => {
+    if(!templates.length) {
+      templatesList.value = [];
+    }
+
     templatesList.value = [...templates].map(
-      item => ({ ...item, content: `{include 'file:templates/${item.content.toString().split(' ')[1]}}` })
-    );
+      item => ({
+        ...item,
+        content: `{include 'file:templates/${item.content.toString().split(' ')[1]}}`,
+        vars: item.vars.reduce((acc, id: number) => {
+          const data = variables.find(data => Number(data[ID_KEY]) === id);
+
+          return data ? [...acc, data] : acc;
+        }, [] as TItemData[])
+      })
+    ) as TTemplateData[];
   };
 
   const setItemsList = (parents: number[], data: Record<string, TItemData[]> | null = null) => {
@@ -89,10 +101,10 @@ const useResourcesStore = defineStore('resources', () => {
         return;
       }
 
-      const { parents, pages, features, templates } = data;
+      const { parents, pages, features, templates, variables } = data;
 
       console.log(data);
-      setTemplatesList(templates);
+      setTemplatesList(variables, templates);
       setItemsList(parents, { pages, features });
     } catch (error) {
       setAlertMessage(POSTS_ERROR_MESS);

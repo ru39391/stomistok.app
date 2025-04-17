@@ -6,4 +6,4 @@ export type TItemData = TCustomData<string | number | boolean>;
 
 export type TItemDataKeys = keyof TItemData;
 
-export type TParentData = TItemData & { children: TItemData[] };
+export type TTemplateData = TItemData & { content: string; vars: TItemData[] };
