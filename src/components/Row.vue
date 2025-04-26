@@ -17,6 +17,7 @@
         { 'line-through': category.isUnpublished }
       ]"
     >{{ category.title }}</td>
+    <td class="px-4 py-2" v-if="false">{{ class_key }}</td>
   </tr>
 </template>
 
@@ -50,6 +51,10 @@ export default defineComponent({
       required: false,
     },
     parent: {
+      type: String,
+      required: true,
+    },
+    class_key: {
       type: String,
       required: true,
     },

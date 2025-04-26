@@ -25,6 +25,7 @@
           <th class="px-4 py-2 text-left">ID категории, новый</th>
           <th class="px-4 py-2 text-left">ID категории</th>
           <th class="px-4 py-2 text-left">Категория</th>
+          <th class="px-4 py-2 text-left" v-if="false">class_key</th>
         </tr>
       </thead>
       <tbody>
@@ -37,6 +38,7 @@
           :pagetitle="item.pagetitle.toString()"
           :parent="item.parent.toString()"
           :isfolder="Boolean(item.isfolder)"
+          :class_key="item.class_key.toString()"
           :parentsList="parentsList"
         />
       </tbody>
