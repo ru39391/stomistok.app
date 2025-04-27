@@ -72,9 +72,10 @@ const useResourcesStore = defineStore('resources', () => {
     const [pagesSorted, featuresSorted] = [sortResArr(pages), sortResArr(features)];
 
     pagesList.value = pagesSorted;
-    featuresList.value = featuresSorted.map(item => {
-      const featureDepts = JSON.parse(`[${item.depts}]`);
-      const featureSubdepts = JSON.parse(`[${item.subdepts}]`);
+    // TODO: скорректировать тип
+    featuresList.value = featuresSorted.map(item => ({ ...item, data: { ...item.data, props: JSON.stringify(item.data.props) } }));/*.map(item => {
+      const featureDepts = item.depts ? JSON.parse(`[${item.depts}]`) : [];
+      const featureSubdepts = item.subdepts ? JSON.parse(`[${item.subdepts}]`) : [];
       const depts = pagesSorted.filter(data => [...featureDepts].includes(data[ID_KEY]));
       const subdepts = pagesSorted.filter(data => [...featureSubdepts].includes(data[ID_KEY]));
 
@@ -84,7 +85,7 @@ const useResourcesStore = defineStore('resources', () => {
         depts: depts.length > 0 ? JSON.stringify([...depts].map(({ idx }) => idx)) : '',
         subdepts: depts.length > 0 ? JSON.stringify([...subdepts].map(({ idx }) => idx)) : ''
       }
-    });
+    })*/;
     parentsList.value = [...pages, ...features].reduce(
       (acc, item) => parents.includes(item[ID_KEY] as number) ? [...acc, item] : acc,
       [] as TItemData[]
