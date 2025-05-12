@@ -12,7 +12,14 @@ import {
 
 import { sortArrValues } from '../../utils';
 
-import type { TCustomValues, TItemData, TTemplateData } from '../../utils/types';
+import type {
+  TCustomData,
+  TCustomValues,
+  TItemData,
+  TTemplateData
+} from '../../utils/types';
+
+type TFeatureListData = TItemData & { data: TCustomValues };
 
 const useResourcesStore = defineStore('resources', () => {
   const isLoading = ref<boolean>(true);
@@ -70,22 +77,52 @@ const useResourcesStore = defineStore('resources', () => {
 
     const [pages, features] = data ? Object.values(data) as TItemData[][] : [[], []] as TItemData[][];
     const [pagesSorted, featuresSorted] = [sortResArr(pages), sortResArr(features)];
-
-    pagesList.value = pagesSorted;
-    // TODO: скорректировать тип, установить верное сопоставление id
-    featuresList.value = featuresSorted.map(item => ({ ...item, data: { ...item.data, props: JSON.stringify(item.data.props) } }));/*.map(item => {
-      const featureDepts = item.depts ? JSON.parse(`[${item.depts}]`) : [];
-      const featureSubdepts = item.subdepts ? JSON.parse(`[${item.subdepts}]`) : [];
-      const depts = pagesSorted.filter(data => [...featureDepts].includes(data[ID_KEY]));
-      const subdepts = pagesSorted.filter(data => [...featureSubdepts].includes(data[ID_KEY]));
+    const sortedFeaturesList = featuresSorted.map((item) => {
+      const { data } = item as TFeatureListData;
 
       return {
         ...item,
-        // TODO: удалять из subdepts значения, совпадающие с depts
-        depts: depts.length > 0 ? JSON.stringify([...depts].map(({ idx }) => idx)) : '',
-        subdepts: depts.length > 0 ? JSON.stringify([...subdepts].map(({ idx }) => idx)) : ''
-      }
-    })*/;
+        data: { ...data, props: JSON.stringify(data.props) } as TFeatureListData['data']
+      };
+    }) as TFeatureListData[];
+
+    console.log({sortedFeaturesList});
+
+
+    pagesList.value = pagesSorted;
+
+    featuresList.value = sortedFeaturesList.map((item) => {
+      const { data: { depts, subdepts, specs } } = item;
+      const [
+        featureDepts,
+        featureSubdepts,
+        featureSpecs
+      ] = [depts, subdepts, specs].map(data => {
+        const str = data ? data.toString() : '';
+        const value = str.includes('Стоматология')
+          ? str.replace('Стоматология - ВЗРОСЛОЕ ОТДЕЛЕНИЕ - Услуги (9)', '9')
+          : str;
+
+        return value;
+      });
+      const ids: TCustomData<number[]> = {
+        depts: featureDepts ? JSON.parse(featureDepts) : [],
+        subdepts: featureSubdepts ? JSON.parse(featureSubdepts) : [],
+        specs: featureSpecs ? JSON.parse(featureSpecs) : []
+      };
+      const values = Object.entries(ids).reduce(
+        (acc, item) => {
+          const items = pagesSorted.filter(data => [...item[1]].includes(data[ID_KEY] as number));
+          const ids = items.map(({ idx }) => idx as number);
+
+          return { ...acc, [item[0]]: ids.length > 0 ? JSON.stringify(ids) : '' }
+        },
+        {} as TCustomData<string>
+      );
+
+      return { ...item, data: { ...item.data, ...values } };
+    });
+
     parentsList.value = [...pages, ...features].reduce(
       (acc, item) => parents.includes(item[ID_KEY] as number) ? [...acc, item] : acc,
       [] as TItemData[]
