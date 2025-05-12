@@ -72,7 +72,7 @@ const useResourcesStore = defineStore('resources', () => {
     const [pagesSorted, featuresSorted] = [sortResArr(pages), sortResArr(features)];
 
     pagesList.value = pagesSorted;
-    // TODO: скорректировать тип
+    // TODO: скорректировать тип, установить верное сопоставление id
     featuresList.value = featuresSorted.map(item => ({ ...item, data: { ...item.data, props: JSON.stringify(item.data.props) } }));/*.map(item => {
       const featureDepts = item.depts ? JSON.parse(`[${item.depts}]`) : [];
       const featureSubdepts = item.subdepts ? JSON.parse(`[${item.subdepts}]`) : [];

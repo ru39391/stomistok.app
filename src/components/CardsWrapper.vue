@@ -90,7 +90,7 @@ export default defineComponent({
       const arr = [...props.resList as TItemData[]].map((item: TItemData) => {
         const parentData = parentsList.value.find(data => data[ID_KEY] === item[PARENT_KEY]);
 
-        return { ...item, [ID_KEY]: item.idx, [PARENT_KEY]: parentData ? parentData.idx : 0 };
+        return item.data ? { ...item.data, [PARENT_KEY]: item[PARENT_KEY] } : { ...item, [ID_KEY]: item.idx, [PARENT_KEY]: parentData ? parentData.idx : 0 };
       });
 
       try {
