@@ -92,7 +92,7 @@ const useResourcesStore = defineStore('resources', () => {
     pagesList.value = pagesSorted;
 
     featuresList.value = sortedFeaturesList.map((item) => {
-      const { data: { depts, subdepts, specs } } = item;
+      const { data: { depts, subdepts, specs, res_id } } = item;
       const [
         featureDepts,
         featureSubdepts,
@@ -119,8 +119,12 @@ const useResourcesStore = defineStore('resources', () => {
         },
         {} as TCustomData<string>
       );
+      const resValue = res_id === undefined ? '' : res_id;
+      const resource = Boolean(resValue)
+        ? pagesSorted.find(data => Number(resValue) === data[ID_KEY] as number)
+        : '';
 
-      return { ...item, data: { ...item.data, ...values } };
+      return { ...item, data: { ...item.data, ...values, ...(resource && { resource: resource.idx }) } };
     });
 
     parentsList.value = [...pages, ...features].reduce(
